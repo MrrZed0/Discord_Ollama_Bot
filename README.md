@@ -7,7 +7,7 @@ This advanced Discord bot connects directly to a local Ollama AI server and uses
 `pip install discord.py aiohttp`
 
 
-2: Replace "YOUR_DISCORD_BOT_TOKEN" with your actual bot token.
+2: Replace `"YOUR_DISCORD_BOT_TOKEN"` with your actual bot token.
 
 3: Make sure your Ollama instance is running locally with a capable model (llama3, mistral, deepseek, etc.).
 
