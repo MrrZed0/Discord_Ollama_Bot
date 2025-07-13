@@ -33,3 +33,5 @@ This advanced Discord bot connects directly to a local Ollama AI server and uses
 
 5: Run the bot:
 `python3 discord-ollama-bot.py`
+
+https://www.instagram.com/reel/DMCI-XoO7Cb/?utm_source=ig_web_button_share_sheet&igsh=MzRlODBiNWFlZA==
