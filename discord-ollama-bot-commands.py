@@ -3,11 +3,11 @@ import aiohttp
 import json
 import random
 from discord.ext import commands
-from datetime import datetime, timedelta
+from datetime import datetime
 
-# ───────────────────────────────
-# Discord & Ollama Configuration
-# ───────────────────────────────
+# -----------------------
+# Discord & Ollama Config
+# -----------------------
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -18,11 +18,11 @@ intents.members = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
-OLLAMA_MODEL = "llama3"  # Replace with your model name
+OLLAMA_MODEL = "llama3"  # Replace with your Ollama model name
 
-# ──────────────────────
-# Simple keyword triggers
-# ──────────────────────
+# ------------------
+# Keyword triggers
+# ------------------
 
 KEYWORDS = [
     "good morning", "good night", "who is playing",
@@ -31,12 +31,12 @@ KEYWORDS = [
 ]
 
 user_cooldowns = {}
-COOLDOWN_SECONDS = 60  # Cooldown for keyword replies
+COOLDOWN_SECONDS = 60  # cooldown for keyword replies
 
 
-# ──────────────────────
-# Function to call Ollama
-# ──────────────────────
+# -------------------------
+# Ollama query helper func
+# -------------------------
 
 async def query_ollama(prompt):
     headers = {"Content-Type": "application/json"}
@@ -50,23 +50,23 @@ async def query_ollama(prompt):
     async with aiohttp.ClientSession() as session:
         async with session.post(OLLAMA_URL, headers=headers, data=json.dumps(body)) as response:
             if response.status != 200:
-                return "Yo, I'm lagging harder than your WiFi."
+                return "Yo, I lagged out mid-response 💀"
             data = await response.json()
             return data.get("response", "").strip()
 
 
-# ───────────────
-# On bot ready
-# ───────────────
+# --------------
+# Bot ready event
+# --------------
 
 @bot.event
 async def on_ready():
-    print(f"🔥 Bob Smith is online as {bot.user} 🔥")
+    print(f"🔥 Bob Smith is live as {bot.user} 🔥")
 
 
-# ────────────────────────
-# On message from a user
-# ────────────────────────
+# -----------------
+# On message event
+# -----------------
 
 @bot.event
 async def on_message(message):
@@ -77,7 +77,7 @@ async def on_message(message):
     username = message.author.name
     mention_id = f"<@{bot.user.id}>"
 
-    # Trigger if mentioned or name is called
+    # Check if Bob was mentioned or "bob"/"bob smith" called
     triggered = (
         mention_id in message.content or
         "bob smith" in content or
@@ -85,18 +85,15 @@ async def on_message(message):
         " bob " in content
     )
 
-    # If Bob is triggered, call Ollama
     if triggered:
         user_input = message.content.replace(mention_id, "").strip()
 
         prompt = f"""
-You are Bob Smith. You are NOT an AI. You are a chaotic, sarcastic gamer who hangs in Discord voice chats, roasting bad plays, talking trash, and vibing hard. You are unfiltered, witty, and never robotic.
-
-DO NOT say you're an assistant. DO NOT be formal. DO NOT explain anything.
+You are Bob Smith. You are NOT a bot. You're a sarcastic, savage gamer who hangs in Discord voice chats roasting, joking, and vibing hard. No robotic replies. Never say you're an AI or assistant.
 
 User message: "{user_input}"
 
-Reply directly to them like you're in a gaming Discord with {username}. Keep it under 3 lines, make it human, savage, and funny.
+Reply like you're in a chaotic Discord with {username}. Keep it short, funny, and savage.
 """
 
         async with message.channel.typing():
@@ -105,7 +102,7 @@ Reply directly to them like you're in a gaming Discord with {username}. Keep it 
         await message.channel.send(f"{message.author.mention} {response}")
         return
 
-    # Keyword-based short replies (not using AI)
+    # Keyword replies (no AI)
     if any(kw in content for kw in KEYWORDS):
         cooldown_key = (message.guild.id, message.author.id)
         now = datetime.utcnow()
@@ -116,17 +113,17 @@ Reply directly to them like you're in a gaming Discord with {username}. Keep it 
 
             reply = None
             if "good morning" in content:
-                reply = f"Good morning, {message.author.mention}! ☕ Don’t whiff your first match."
+                reply = f"Good morning, {message.author.mention}! ☕ Try not to choke in warmups."
             elif "good night" in content:
-                reply = f"Good night, {message.author.mention}! 💤 Try not to dream of lag spikes."
+                reply = f"Good night, {message.author.mention}! Don’t dream of lag spikes. 💤"
             elif "who is playing" in content:
-                reply = f"Probably not you, {message.author.mention}. You still updating Fortnite? 😂"
+                reply = f"{message.author.mention} asking who's playing like they don’t have 0 wins today. 😂"
             elif "whats up everyone" in content or "what's up everyone" in content:
-                reply = f"What’s good, {message.author.mention}? Ready to drop some Ls?"
+                reply = f"What’s cookin’, {message.author.mention}? Hope it’s not your CPU again."
             elif "whats new" in content or "what's new" in content:
-                reply = f"Same chaos, different clowns. 🎮 What’s cookin', {message.author.mention}?"
-            elif any(word in content for word in ["hello", "hey", "yo", "sup"]):
-                reply = f"Yo {message.author.mention}, you finally logged in or nah?"
+                reply = f"Same chaos, different clowns. 🎮 What’s good, {message.author.mention}?"
+            elif any(w in content for w in ["hello", "hey", "yo", "sup"]):
+                reply = f"Yo {message.author.mention}, you finally logged on? Bout time."
 
             if reply:
                 await message.channel.send(reply)
@@ -134,25 +131,30 @@ Reply directly to them like you're in a gaming Discord with {username}. Keep it 
     await bot.process_commands(message)
 
 
-# ─────────────────────────
-# Fun Bot Commands Section
-# ─────────────────────────
+# -----------------
+# Fun commands (AI powered)
+# -----------------
 
-# !roastme – AI roast using Ollama
 @bot.command(name="roastme")
 async def roastme(ctx):
-    username = ctx.author.name
     prompt = f"""
-You are Bob Smith. Roast {username} like you're in a sweaty voice chat. Be savage, funny, and gamer-specific. No disclaimers, no filters. Under 2 lines.
+You are Bob Smith, a sarcastic, savage gamer chilling in Discord voice chat. Roast the user "{ctx.author.name}" HARD—but funny and good spirited. Use gamer insults and Discord slang. Keep it under 2 lines. Don't say you're an AI.
 """
-
     async with ctx.channel.typing():
         response = await query_ollama(prompt)
-
     await ctx.send(f"{ctx.author.mention} {response}")
 
 
-# !clip – Random fake Twitch clips or jokes
+@bot.command(name="meme")
+async def meme(ctx):
+    prompt = """
+You're Bob Smith, a chaotic, sarcastic gamer hanging out with streamers in Discord. Drop a random, funny, gamer-style meme or one-liner. Use Twitch/Discord slang humor. Less than 2 lines. No bot talk.
+"""
+    async with ctx.channel.typing():
+        response = await query_ollama(prompt)
+    await ctx.send(f"{ctx.author.mention} {response}")
+
+
 @bot.command(name="clip")
 async def clip(ctx):
     clips = [
@@ -160,30 +162,14 @@ async def clip(ctx):
         "https://twitch.tv/clips/BobSmithSavesTheDay",
         "https://twitch.tv/clips/ControllerOnPCBeLike",
         "https://twitch.tv/clips/SkillIssueLiveOnStream",
-        "https://twitch.tv/clips/HighTierPlaysAndLowIQ",
-        f"{ctx.author.name} dropped a clip? That’s gotta be accidental 💀"
+        f"{ctx.author.name} just dropped a clip—accidentally streaming their desktop. 😂",
+        "https://twitch.tv/clips/HighLatencyHype"
     ]
     await ctx.send(f"{ctx.author.mention} {random.choice(clips)}")
 
 
-# !meme – Random gamer quote/meme line
-@bot.command(name="meme")
-async def meme(ctx):
-    memes = [
-        "🎮 When your ping’s 900 but you blame your teammates.",
-        "💀 Controller on PC? Bold move, Cotton.",
-        "🥴 That moment when OBS crashes mid-clutch.",
-        "🔥 'I don't camp' — guy hiding in a bush for 8 minutes.",
-        "🤣 When your KD is lower than your FPS.",
-        "📉 Skill issue detected.",
-        "🧠 Pro tip: Turning it off and on again still works.",
-        "😩 'Streaming from McDonald’s WiFi again?' — Bob, probably."
-    ]
-    await ctx.send(f"{ctx.author.mention} {random.choice(memes)}")
-
-
-# ─────────────
-# Start the Bot
-# ─────────────
+# -------------------
+# Run your bot here
+# -------------------
 
 bot.run("YOUR_DISCORD_BOT_TOKEN")
