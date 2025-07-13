@@ -28,6 +28,7 @@ KEYWORDS = [
     "good morning", "good night", "who is playing",
     "whats up everyone", "what's up everyone",
     "whats new", "what's new", "hello", "hey", "yo", "sup"
+    "bob", "bob smith", "game night", "gamenight", "sup people", "live"
 ]
 
 user_cooldowns = {}
